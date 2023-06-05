@@ -1,0 +1,12 @@
+LICENSE
+README.md
+pyproject.toml
+squardot_utils_standard.egg-info/PKG-INFO
+squardot_utils_standard.egg-info/SOURCES.txt
+squardot_utils_standard.egg-info/dependency_links.txt
+squardot_utils_standard.egg-info/requires.txt
+squardot_utils_standard.egg-info/top_level.txt
+utils_standard/__init__.py
+utils_standard/data/colors_constants.md
+utils_standard/modules/__init__.py
+utils_standard/modules/utils.py

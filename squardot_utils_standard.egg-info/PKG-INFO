@@ -1,0 +1,98 @@
+Metadata-Version: 2.1
+Name: squardot-utils-standard
+Version: 1.0.5
+Summary: Utils a standard toolkits for devlops.
+Author-email: Mr Yassin NM <mr.yassin.dev@outlook.com>
+License: MIT License
+        
+        Copyright (c) 2023 Mr. Yassin NM - (squardot-utils-standard)
+        
+        Permission is hereby granted, free of charge, to any person obtaining a copy
+        of this software and associated documentation files (the "Software"), to deal
+        in the Software without restriction, including without limitation the rights
+        to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+        copies of the Software, and to permit persons to whom the Software is
+        furnished to do so, subject to the following conditions:
+        
+        The above copyright notice and this permission notice shall be included in all
+        copies or substantial portions of the Software.
+        
+        THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+        IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+        FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+        AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+        LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+        OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+        SOFTWARE.
+        
+Project-URL: homepage, http://squardot.com
+Project-URL: repository, https://github.com/MrYassinox/
+Project-URL: documentation, https://github.com/MrYassinox/
+Project-URL: Bug Tracker, https://github.com/MrYassinox/
+Classifier: Topic :: Utilities
+Classifier: Development Status :: 5 - Production/Stable
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.7
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Operating System :: OS Independent
+Classifier: Environment :: Other Environment
+Classifier: Natural Language :: English
+Requires-Python: >=3.7
+Description-Content-Type: text/markdown
+License-File: LICENSE
+
+# Project Card
+[![GitHub license](https://img.shields.io/github/license/MrYassinox/utils-standard?color=blue)](./LICENSE)
+![GitHub last commit (branch)](https://img.shields.io/github/last-commit/MrYassinox/utils-standard/main?color=success&style=flat)
+![GitHub Latest Release](https://img.shields.io/github/v/release/MrYassinox/utils-standard)
+![GitHub Release Date](https://img.shields.io/github/release-date/MrYassinox/utils-standard?color=success&style=flat)
+
+**squardot-utils-standard**: is a Python library that provides a collection of standard utility functions and modules for various tasks of develop.
+
+## Features:
+- Not needed a dependencies and small.
+- File operations (directory creation, file removal, file search and replace, etc.)
+- System information retrieval (Python version, system platform, processor details, etc.)
+- Data handling (reading data from CSV and XLSX files)
+- Text and file manipulation (searching and replacing strings, editing text files, scanning folders, etc.)
+- Web-related functions (handling web requests, downloading files, checking file sizes, and storing metadata, etc.)
+- Threading utilities (decorator for measuring task execution time, threaded function execution, etc.)
+- Module management (importing modules from specific directories, retrieving modules and images from directories, etc.)
+- Exception handling (safe execution of code that may raise exceptions)
+- Various utility classes for tasks such as timer management, threading, colors, etc.
+
+> Python, library, utility functions, file operations, system information, image processing, data handling, module management, exception handling, timer, colors manipulation, image analysis, web requests
+
+# Installation
+## Using
+> Create and activate a Python virtual environment.
+```python
+pip install -e git+https://github.com/MrYassinox/utils-standard.git@main
+#or
+pip install https://github.com/MrYassinox/utils-standard/archive/main.zip
+```
+
+## Using as a devlope
+> Cloning repository with `git clone` go to into your project directory where to clone repository.
+```python
+git clone https://github.com/MrYassinox/utils-standard.git
+pip install -e .  # go to inside project repository directory and run this command.
+```
+
+# Platform used info
+![python version](https://img.shields.io/static/v1?label=python&message=^3.9&color=yellowgreen&style=flat)
+
+- Scripting __Frameworks__ : ``python``
+  - Python version : ``^3.9``
+
+# Documentation
+The documentation has not available currently.
+
+# Credits
+
+# License
+Code released under the MIT license. see [license](./LICENSE) for further details.

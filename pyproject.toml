@@ -1,0 +1,83 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+
+[project]
+# DESC | The name of the package. Required
+name = "squardot-utils-standard"
+
+# DESC | The version of the package. Required
+version = "1.0.9"
+
+# DESC | A short description of the package. Required
+description = "Utils a standard toolkits for devlops."
+
+# DESC | A list of keywords that the package is related to. Optional
+keywords = []
+
+# DESC | The authors of the package. Required
+authors = [{ name="Mr Yassin NM", email="mr.yassin.dev@outlook.com" },]
+
+# DESC | The license of the package. Optional
+license = {file="LICENSE"}
+
+# DESC | A path, or list of paths corresponding to the README file(s) of the package. Optional
+readme = "README.md"
+
+# DESC | A The Python version requirements of the project.
+requires-python = ">=3.7"
+
+# DESC | A list of PyPI trove classifiers that describe the project https://pypi.org/classifiers/. Optional
+classifiers = [
+  "Topic :: Utilities",
+  "Development Status :: 5 - Production/Stable",
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.7",
+  "Programming Language :: Python :: 3.8",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Operating System :: OS Independent",
+  "Environment :: Other Environment",
+  "Natural Language :: English",
+]
+
+# DESC | A dependencies requires needed.
+dependencies = [
+  'python-dotenv >= 1.0.0',
+  'loguru >= 0.7.0',
+  'numpy >= 1.24.3',
+  'requests >= 2.31.0',
+  'chardet >= 5.1.0',
+]
+
+
+[project.urls]
+# DESC | An URL to the website of the project. Optional
+homepage = "http://squardot.com"
+
+# DESC | An URL to the repository of the project. Optional
+repository = "https://github.com/MrYassinox/"
+
+# DESC | An URL to the documentation of the project. Optional
+documentation = "https://github.com/MrYassinox/"
+
+# DESC | Bug url
+"Bug Tracker" = "https://github.com/MrYassinox/"
+
+
+[tool.setuptools]
+include-package-data = true # DESC | By default, include-package-data is true in pyproject.toml, so you do
+
+
+[tool.setuptools.packages.find]
+where = ["."] # DESC | list of folders that contain the packages (["."] by default)
+include = ["utils_standard*"] # DESC | package names should match these glob patterns (["*"] by default)
+exclude = [] # DESC | exclude packages matching these glob patterns (empty by default) ["my_package.tests*"]
+
+
+[tool.setuptools.package-data]
+"*" = ["*.txt", "*.md"] # DESC | include data the .txt etc as data files and ("*" the root packages folders or name)
+# pkg = ["*.txt", "*.md"]
