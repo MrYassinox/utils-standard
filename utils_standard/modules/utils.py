@@ -25,11 +25,12 @@ import importlib
 import csv
 import tarfile
 import argparse
+import uuid
 from argparse import ArgumentParser
 from collections import namedtuple
 from glob import glob
 from types import SimpleNamespace, FunctionType
-from typing import List, Any, Dict, Callable, Union, Tuple, Iterable, Literal, Optional
+from typing import List, Any, Dict, Set, Callable, Union, Tuple, Iterable, Literal, Optional
 from io import BytesIO
 from pathlib import Path
 from importlib import util
@@ -428,6 +429,39 @@ class LoggerHandle:
         return self.logger.exception(message, **kwargs)
 logger = LoggerHandle(context='DEV')
 
+# NOTE => Get the current Python version number info.
+def get_current_py_version(major: bool = True, minor: bool = True, micro: bool = True)-> str:
+    """Get the current Python version number info.
+
+    Args:
+        `major` (bool, optional): The current version major. Defaults to True.
+        `minor` (bool, optional): The current version minor. Defaults to True.
+        `micro` (bool, optional): The current version micro. Defaults to True.
+
+    Returns:
+        str: Returns version number.
+    """
+    current_version = sys.version_info # DESC => Get the current Python version number info.
+    _major, _minor, _micro = current_version.major, current_version.minor, current_version.micro
+
+    if major and minor and micro:
+        return f"{_major}.{_minor}.{_micro}"
+    elif major and minor and micro is False:
+        return f"{_major}.{_minor}"
+    elif major and minor is False and micro is False:
+        return f"{_major}"
+    elif major is False and minor and micro is False:
+        return f"{_minor}"
+    elif major is False and minor is False and micro:
+        return f"{_micro}"
+    else:
+        return ""
+
+# NOTE => Gets all Python versions available on the system.
+def get_py_versions_available() -> None:
+    """Gets all Python versions available on the system."""
+    run_shell_command(command="-0", shell="system")
+
 # NOTE => initialization a temp folder path
 def setup_temp(path: str = root_path) -> str:
     """Initialize a temporary folder path.
@@ -480,8 +514,10 @@ def clear() -> None:
     """
     name = os.name
     if name == 'nt':
+        # DESC => for Windows(here, os.name is 'nt')
         _ = os.system('cls')
-    else: # NOTE => for mac and linux(here, os.name is 'posix')
+    else:
+        # DESC => for mac and linux(here, os.name is 'posix')
         _ = os.system('clear')
 
 # NOTE => Remove files that are older than specified days.
@@ -659,6 +695,46 @@ def module_exists(module_name: str = None, logs: Optional[LoggerHandle]=None) ->
         logs.warning("Module not found error!") if isinstance(logs, LoggerHandle) else None
         return False
     return spec is not None
+
+# NOTE => Run a shell command python and capture the output.
+@logger.catch()
+def run_shell_command(command: str, shell: Optional[Literal["system", "popen", "subprocess"]] = None):
+    """Run a shell command python and capture the output.
+
+    Args:
+        `command` (str): The command to run on shell. Example "-h" or "--help".
+        `shell` (Optional["system", "popen", "subprocess"], optional): The shell of to run command. Defaults to "system".
+
+    Returns:
+        (str | None): if use shell `subprocess` Returns output as string else return none.
+
+    Notes:
+        - `system`:  This will run the command and return any output.
+        - `popen`: This will run the command and not return any output.
+        - `subprocess`: Can then process or display the output and returned as a string.
+    """
+    PYTHON = sys.executable # DESC => getting path to python executable (full path of deployed python).
+    name = os.name
+
+    if name == 'nt':
+        # DESC => for Windows(here, os.name is 'nt')
+        PYTHON = "py"
+    else: 
+        # DESC => for mac and linux(here, os.name is 'posix')
+        PYTHON = "python"
+
+    # DESC => initialize cmd
+    cmd_command = '{} {}'.format(PYTHON, command)
+
+    if shell == "system":
+        os.system(cmd_command) # DESC => This will run the command and return any output.
+    elif shell == "popen":
+        os.popen(cmd_command).read() # DESC => This will run the command and not return any output.
+    elif shell == "subprocess":
+        output = subprocess.check_output(cmd_command, shell=True, text=True) # DESC => can then process or display the output and returned as a string
+        return output
+    else:
+        os.system(cmd_command) # DESC => This will run the command and return any output.
 
 # NOTE => Run a subprocess command and capture the output.
 @logger.catch()
@@ -2994,6 +3070,43 @@ def get_string_before_pattern(string: str, pattern: str=None):
         return string
     else:
         return string[:index]
+
+# NOTE => The time sleep duration with higher accuracy.
+def time_sleep_accuracy(sleep_time: Union[int, float], measuring_time: Optional[Literal["monotonic", "performance"]] = None):
+    """The time sleep duration with higher accuracy.
+
+    Args:
+        `sleep_time` (Union[int, float]): The seconds duration of sleep.
+        `measuring_time` (Union[str, None]): The measuring time intervals calculation you can choice "monotonic", "performance".
+    
+    Returns:
+        None.
+
+    Notes:
+        - `performance`: The it calculates measuring time intervals value (in fractional seconds) of 
+            a clock with the highest available resolution on the system.
+            - This is suitable for measuring short durations and is primarily used for performance benchmarking and timing operations.
+            - The value returned is based on the system's monotonic clock but may include fractions of a second for higher precision.
+            - It can be affected by system clock adjustments, such as time adjustments made by the user or network time synchronization.
+        
+        - `monotonic`: It returns the value (in fractional seconds) of a clock that cannot go backward and is unaffected by system clock adjustments.
+            - This is intended for measuring elapsed time between two points, independent of the system clock.
+            - It's useful for tasks such as measuring timeouts, calculating durations, or synchronizing activities.
+            - The value returned does not represent an actual date or time; it's only a relative measure of time.
+            - It guarantees monotonically increasing values, ensuring that it never goes backward even if the system clock is adjusted.
+    """
+    if measuring_time == "monotonic":
+        measuring = time.monotonic
+    elif measuring_time == "performance":
+        measuring = time.perf_counter
+    else:
+        measuring = time.monotonic
+
+    start_time = measuring()
+    end_time = start_time + sleep_time
+    while measuring() < end_time:
+        remaining_time = end_time - measuring()
+        time.sleep(remaining_time)
 
 ########################################################################################################################
 # TODO CLASSES MODULES
@@ -6787,15 +6900,15 @@ class Argparse(ArgumentParser):
 
 class EventsSignature:
     """EventsSignature class."""
-    def __init__(self): # DESC => initialize constructor.
+    def __init__(self):
         """Initialize the EventsSignature object.
         
         The EventsSignature class is used to set and get attributes, and signature the callback object function and init event.
 
         Methods:
-            `setattr(name: str, value: Any)`: 
+            `setattribute(attribute_name: str, value: Any)`: 
                 Sets the named attribute of the object to the specified value.
-            `getattr(name: str)`: 
+            `getattribute(attribute_name: str)`: 
                 Get a named attribute from object.
             `signature_obj_and_init_callback(callback: Callable, init_event: Any = None)`: 
                 Signature of callback the object function and init event.
@@ -6803,56 +6916,55 @@ class EventsSignature:
         Example:
         ```python
             >>> EVENTS = EventsSignature()
-            >>> EVENTS.setattr("init", None)
-            >>> print(EVENTS.getattr("init"))
+            >>> EVENTS.setattribute("init", None)
+            >>> print(EVENTS.getattribute("init"))
             # Output.
             # None
 
-            >>> EVENTS.setattr("index", 100)
-            >>> print(EVENTS.getattr("index"))
+            >>> EVENTS.setattribute("index", 100)
+            >>> print(EVENTS.getattribute("index"))
             # Output.
             # 100
 
-            >>> EVENTS.setattr("name", "flet")
+            >>> EVENTS.setattribute("name", "flet")
             >>> print(EVENTS.name))
             # Output.
             # flet
 
             >>> expression = lambda e: print(e.data)
-            >>> EVENTS.setattr("data", "flet")
+            >>> EVENTS.setattribute("data", "flet")
             >>> EVENTS.signature_obj_and_init_callback(expression, init_event=EVENTS)
             # Output.
             # flet
         ```
         """
-        # DESC => Initialize the state variables attribute
         self.init = None
 
     # DESC => the initialize method inside the class.
     @staticmethod
-    def setattr(name: str, value: Any):
+    def setattribute(attribute_name: str, value: Any):
         """Sets the named attribute of the object to the specified value.
 
         Args:
-            `name` (str): The name of the attribute.
+            `attribute_name` (str): The name of the attribute.
             `value` (Any): The value of the attribute.
 
         Returns:
             None
         """
-        setattr(EventsSignature, name, value)
+        setattr(EventsSignature, attribute_name, value)
     
     @staticmethod
-    def getattr(name: str):
+    def getattribute(attribute_name: str):
         """Get a named attribute from object.
 
         Args:
-            `name` (str): The name of the attribute.
+            `attribute_name` (str): The name of the attribute.
         
         Returns:
             value: the value of attribute.
         """
-        return getattr(EventsSignature, name)
+        return getattr(EventsSignature, attribute_name)
 
     @staticmethod
     def signature_obj_and_init_callback(callback: Callable, init_event: Any = None):
@@ -6962,4 +7074,209 @@ class AxisCalc:
             return top, bottom, right, left
         except Exception as error:
             raise Exception(f"Error: {error}")
+
+class GenerateID:
+    """A class to generate a unique id"""
+    def __init__(self): # DESC => initialize constructor.
+        """Initialize the GenerateID object.
+
+        Methods:
+            `generate_random_id()`: Generate a unique id random.
+            `generate_md5_id()`: Generate a unique id of MD5 hash namespace.
+            `generate_sha1_id()`: Generate a unique id of SHA-1 hash namespace.
+            `check_name_md5()`: Check id of uuid version 3 the MD5 hash it match name.
+            `check_name_sha1()`: Check id of uuid version 5 the SHA-1 hash it match name.
+
+        Example:
+        ```python
+            gen = GenerateID()
+
+            gen.generate_random_id(hex_id=None, short_id=None) # DESC => The method 1.
+            # output => c89fe448-ae91-4fce-ac5d-a48a6d580665
+            
+            gen.generate_random_id(hex_id=None, short_id=8) # DESC => The method 2.
+            # output => c89fe448
+
+            gen.generate_random_id(hex_id=True, short_id=None) # DESC => The method 3.
+            # output => c89fe448ae914fceac5da48a6d580665
+
+            md5 = gen.generate_md5_id(namespace="example") # DESC => The method 4.
+            # output => c5e5f349-28ef-3f5a-98d6-0b32ee4d1743
+
+            gen.check_name_md5(namespace="example", md5=md5) # DESC => The method 5.
+            # output => True
+
+            sha1 = gen.generate_sha1_id(namespace="example") # DESC => The method 6.
+            # output => 7cb48787-6d91-5b9f-bc60-f30298ea5736
+
+            gen.check_name_sha1(namespace="example", sha1=sha1) # DESC => The method 7.
+            # output => True
+        ```
+        """
+        # DESC => Initialize the state variables attribute.
+
+    def generate_random_id(self, hex_id: Optional[bool] = None, short_id: Optional[int] = None):
+        """Generate a unique id random.
+
+        Args:
+            `hex_id` (Optional[bool], optional): Set hexadecimal representation of id. Defaults to None.
+            `short_id` (Optional[int], optional): Set short id. Defaults to None.
+
+        Returns:
+            str.
+        """
+        # DESC => Generate a unique id random.
+        unique_id = uuid.uuid4()
+
+        if hex_id:
+            unique_id = unique_id.hex # DESC => Set hexadecimal representation of id
+
+        if short_id:
+            unique_id = str(unique_id)[:short_id] # DESC => Set short id.
+        return unique_id
+
+    def generate_md5_id(self, namespace: str):
+        """Generate a unique id of MD5 hash namespace.
+
+        Args:
+            `namespace` (str): Set any name for generate id to same name.
+
+        Returns:
+            UUID.
+        """
+        # DESC => Generate a unique id of MD5 hash.
+        return uuid.uuid3(namespace=uuid.NAMESPACE_DNS, name=namespace)
+
+    def generate_sha1_id(self, namespace: str):
+        """Generate a unique id of SHA-1 hash namespace.
+
+        Args:
+            `namespace` (str): Set any name for generate id to same name.
+
+        Returns:
+            UUID.
+        """
+        # DESC => Generate a unique id of SHA-1 hash.
+        return uuid.uuid5(namespace=uuid.NAMESPACE_DNS, name=namespace)
+
+    def check_name_md5(self, namespace: str, md5: uuid.UUID):
+        """Check id of uuid version 3 the MD5 hash it match name.
+
+        Args:
+            `namespace` (str): The name to checke a match.
+            `md5` (Optional[uuid.UUID, str]): The id of uuid version 3 to checke a match same name.
+
+        Returns:
+            bool: If the provided UUID match, it returns True; otherwise, it returns False.
+        """
+        if isinstance(md5, uuid.UUID):
+            provided_uuid3 = md5
+        else:
+            provided_uuid3 = uuid.UUID(hex=md5)
+
+        generated_match = uuid.uuid3(namespace=uuid.NAMESPACE_DNS, name=namespace)
+
+        return generated_match == provided_uuid3
+
+    def check_name_sha1(self, namespace: str, sha1: uuid.UUID):
+        """Check id of uuid version 5 the SHA-1 hash it match name.
+
+        Args:
+            `namespace` (str): The name to checke a match.
+            `sha1` (Optional[uuid.UUID, str]): The id of uuid version 5 to checke a match same name.
+
+        Returns:
+            bool: If the provided UUID match, it returns True; otherwise, it returns False.
+        """
+        if isinstance(sha1, uuid.UUID):
+            provided_uuid5 = sha1
+        else:
+            provided_uuid5 = uuid.UUID(hex=sha1)
+
+        generated_match = uuid.uuid5(namespace=uuid.NAMESPACE_DNS, name=namespace)
+
+        return generated_match == provided_uuid5
+
+class AttrRegisterMap:
+    """A class AttrRegisterMap the attributes register and manages map.
+
+    Methods:
+        `setattribute`(attribute_name: str, value: Any, attribute_update: bool = True): Sets the named attribute of the object to the specified value.
+        `getattribute`(attribute_name: str): Gets the named attribute from object.
+
+    Example:
+    ```python
+        # DESC => Set attributes.
+        AttrRegisterMap.setattribute(attribute_name="Main", value={'control': self, 'locals': locals()})
+        
+        print(AttrRegisterMap.getattribute("Main"))
+        # DESC => {'control': self, 'locals': locals()}
+    ```
+
+    Notes:
+        - `setattribute`: This for set attribute object to the specified value. 
+            if attribute exists and attributeis whether (Dict or List or Tuple or Set) 
+            and `attribute_update` is True it add a new values to attribute object.
+    """
+    ATTRIBUTE_MAP = None
+
+    # DESC => the initialize method inside the class.
+    @staticmethod
+    def setattribute(attribute_name: str, value: Any, attribute_update: bool = True):
+        """Sets the named attribute of the object to the specified value.
+
+        Args:
+            `attribute_name` (str): The name of the attribute.
+            `value` (Any): The value of the attribute.
+            `attribute_update` (bool): if whether True it add a new values to attribute object.
+                of type (Dict or List or Tuple or Set).
+
+        Returns:
+            None
+            
+        Notes:
+            - `setattribute`: This for set attribute object to the specified value. 
+                if attribute exists and attributeis whether (Dict or List or Tuple or Set) 
+                and `attribute_update` is True it add a new values to attribute object.
+        """
+        # DESC => Check if attribute of attribute_name not available in class AttrRegisterMap.
+        if not hasattr(AttrRegisterMap, attribute_name):
+            setattr(AttrRegisterMap, attribute_name, value)
+        else:
+            # print(f"Attribute: '{attribute_name}' already exists in AttrRegisterMap.!")
+            if attribute_update:
+                if isinstance(AttrRegisterMap.getattribute(attribute_name), Dict):
+                    # DESC => Add a new name and value to the Dictionary.
+                    AttrRegisterMap.getattribute(attribute_name).update(value)
+                elif isinstance(AttrRegisterMap.getattribute(attribute_name), List):
+                    # DESC => Add a new value to the List.
+                    AttrRegisterMap.getattribute(attribute_name).extend(value)
+                elif isinstance(AttrRegisterMap.getattribute(attribute_name), Tuple):
+                    # DESC => Add a new value to the Tuple.
+                    updated_tuple = AttrRegisterMap.getattribute(attribute_name) + value
+                    setattr(AttrRegisterMap, attribute_name, updated_tuple)
+                elif isinstance(AttrRegisterMap.getattribute(attribute_name), Set):
+                    # DESC => Add a new value to the Set.
+                    if isinstance(value, Set):
+                        AttrRegisterMap.getattribute(attribute_name).update(value)
+                    else:
+                        AttrRegisterMap.getattribute(attribute_name).add(value)
+                else:
+                    setattr(AttrRegisterMap, attribute_name, value)
+            else:
+                setattr(AttrRegisterMap, attribute_name, value)
+    
+    @staticmethod
+    def getattribute(attribute_name: str):
+        """Get a named attribute from object.
+
+        Args:
+            `attribute_name` (str): The name of the attribute.
+        
+        Returns:
+            Any: The returns value of attribute.
+        """
+        assert hasattr(AttrRegisterMap, attribute_name), f"Attribute '{attribute_name}' does not exist."
+        return getattr(AttrRegisterMap, attribute_name)
+
 
