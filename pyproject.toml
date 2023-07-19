@@ -8,7 +8,7 @@ build-backend = "setuptools.build_meta"
 name = "squardot-utils-standard"
 
 # DESC | The version of the package. Required
-version = "1.0.9"
+version = "1.1.1"
 
 # DESC | A short description of the package. Required
 description = "Utils a standard toolkits for devlops."

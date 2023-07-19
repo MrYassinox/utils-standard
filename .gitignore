@@ -18,3 +18,4 @@ workflow.code-workspace
 .env.production.local
 .environment
 generate_docs.py
+generate_venv.py
