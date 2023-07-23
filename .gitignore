@@ -3,6 +3,7 @@
 # => DESC | python
 **/__pycache__/
 /utils_standard/**/__pycache__/
+portdev_utils_standard.egg-info
 
 # => DESC | visual code
 .vscode

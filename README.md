@@ -10,7 +10,7 @@
 
 </div>
 
-**squardot-utils-standard**: is a Python library that provides a collection of standard utility functions and modules for various tasks of develop.
+**portdev-utils-standard**: is a Python library that provides a collection of standard utility functions and modules for various tasks of develop.
 
 ## Features:
 - Not needed a dependencies and small.

@@ -5,16 +5,16 @@ build-backend = "setuptools.build_meta"
 
 [project]
 # DESC | The name of the package. Required
-name = "squardot-utils-standard"
+name = "portdev-utils-standard"
 
 # DESC | The version of the package. Required
-version = "1.1.1"
+version = "1.1.2"
 
 # DESC | A short description of the package. Required
 description = "Utils a standard toolkits for devlops."
 
 # DESC | A list of keywords that the package is related to. Optional
-keywords = []
+keywords = ["python", "library", "utility functions", "file operations", "system information", "image processing", "data handling", "module management", "exception handling", "timer", "colors manipulation", "image analysis", "web requests"]
 
 # DESC | The authors of the package. Required
 authors = [{ name="Mr Yassin NM", email="mr.yassin.dev@outlook.com" },]
@@ -31,6 +31,7 @@ requires-python = ">=3.7"
 # DESC | A list of PyPI trove classifiers that describe the project https://pypi.org/classifiers/. Optional
 classifiers = [
   "Topic :: Utilities",
+  "Intended Audience :: Developers",
   "Development Status :: 5 - Production/Stable",
   "License :: OSI Approved :: MIT License",
   "Programming Language :: Python :: 3",
@@ -56,7 +57,7 @@ dependencies = [
 
 [project.urls]
 # DESC | An URL to the website of the project. Optional
-homepage = "http://squardot.com"
+homepage = "http://portdev.com"
 
 # DESC | An URL to the repository of the project. Optional
 repository = "https://github.com/MrYassinox/"

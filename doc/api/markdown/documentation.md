@@ -24,6 +24,7 @@
 ## Functions
 
 - [`utils.check_file_size`](./utils.md#function-check_file_size): Check if the file size is less than or equal to the allowed size.
+- [`utils.check_is_matching_pattern`](./utils.md#function-check_is_matching_pattern): Check if any of the patterns match the characters or strings.
 - [`utils.check_run`](./utils.md#function-check_run): Check if a command runs successfully.
 - [`utils.check_signature_object`](./utils.md#function-check_signature_object): introspect function parameters.
 - [`utils.check_string_match_pattern`](./utils.md#function-check_string_match_pattern): Check if the characters in the string match the pattern.
