@@ -26,6 +26,7 @@ import csv
 import tarfile
 import argparse
 import uuid
+import re
 from argparse import ArgumentParser
 from collections import namedtuple
 from glob import glob
@@ -3107,6 +3108,104 @@ def time_sleep_accuracy(sleep_time: Union[int, float], measuring_time: Optional[
     while measuring() < end_time:
         remaining_time = end_time - measuring()
         time.sleep(remaining_time)
+
+# NOTE => Check if any of the patterns match the characters or strings.
+def check_is_matching_pattern(sequence_string: str, pattern: Union[str, List], operator: Literal["search", "findall"] = "search"):
+    """Check if any of the patterns match the characters or strings.
+
+    Args:
+        `sequence_string` (str): The input string to be to check for matches.
+        `pattern` (Union[str, List]): The pattern to match or a list of regular expression patterns to 
+            match has an 'r' prefix (indicating it is a raw string).
+        `operator` (Literal["search", "findall"]): The check operator the way to check matching 
+            if use `"search"` returns boolen for first result, or use `"findall"` to returns list for an found all result.
+
+    Returns:
+        (bool | list | None): if use "search" returns boolen, or use "findall" to returns list
+    
+    Example:
+    ```python
+
+        # DESC => You can use list patterns with has an 'r' prefix (indicating it is a raw string).
+        patterns = [r"\d+", r"[a-z]+"] # DESC => This list contains two patterns: digits and lowercase letters.
+        input_string = "abc123xyz"
+
+        if check_is_matching_pattern(input_string, patterns):
+            print("Pattern matched in the input string.")
+        else:
+            print("No match found in the input string.")
+
+        # DESC => You can use a list patterns in string with has an 'r' prefix (indicating it is a raw string).
+        patterns = r"\d+|[a-z]+"
+        input_string = "abc123xyz"
+
+        if check_is_matching_pattern(input_string, patterns):
+            print("Pattern matched in the input string.")
+        else:
+            print("No match found in the input string.")
+
+        # DESC => You can use patterns a string with has an 'r' prefix (indicating it is a raw string).
+        patterns = r"quick.*fox"
+        input_string = "The quick brown fox jumps over the lazy dog."
+        
+        if check_is_matching_pattern(input_string, patterns):
+            print("Pattern matched in the input string.")
+        else:
+            print("No match found in the input string.")
+
+        # DESC => You can use patterns a string without has an 'r' prefix (indicating it is a raw string).
+        patterns = "hello"
+        input_string = "Hello, world!"
+        
+        if check_is_matching_pattern(input_string, patterns):
+            print("Pattern matched in the input string.")
+        else:
+            print("No match found in the input string.")
+
+        # DESC => You can use operator "findall" with patterns a string without has an 'r' prefix (indicating it is a raw string).
+        patterns = "hello"
+        input_string = "Hello, world!"
+        
+        check = check_is_matching_pattern(input_string, patterns, operator="findall")
+        if check:
+            print(check) # output => ["hello"]
+        else:
+            print(check)
+
+        # DESC => ou can use operator "findall" with patterns a string has an 'r' prefix (indicating it is a raw string).
+        patterns = r"name|hi"
+        input_string = "Hello, world!"
+        
+        check = check_is_matching_pattern(input_string, patterns, operator="findall")
+        if check:
+            print(check)
+        else:
+            print(check) # output => []
+    ```
+    """
+    if operator == "search":
+        if isinstance(pattern, List):
+            # DESC => Combine the elements using the '|' operator.
+            pattern = "|".join(pattern)
+
+            # DESC => Find with the combined pattern to find the first match.
+            match = re.search(pattern, sequence_string)
+        else:
+            # DESC => Find the pattern in the input string.
+            match = re.search(pattern, sequence_string)
+    else:
+        if isinstance(pattern, List):
+            # DESC => Combine the elements using the '|' operator.
+            pattern = "|".join(pattern)
+
+            # DESC => Find with the combined pattern to find the first match.
+            match = re.findall(pattern, sequence_string)
+        else:
+            # DESC => Find the pattern in the input string.
+            match = re.findall(pattern, sequence_string)
+
+    # DESC => If a match is found, return True; otherwise, return False.
+    return match
 
 ########################################################################################################################
 # TODO CLASSES MODULES
