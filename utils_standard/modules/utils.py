@@ -6997,95 +6997,6 @@ class Argparse(ArgumentParser):
         self.args_dictionary = dict(self.get_args_namespace().__dict__)
         return self.args_dictionary
 
-class EventsSignature:
-    """EventsSignature class."""
-    def __init__(self):
-        """Initialize the EventsSignature object.
-        
-        The EventsSignature class is used to set and get attributes, and signature the callback object function and init event.
-
-        Methods:
-            `setattribute(attribute_name: str, value: Any)`: 
-                Sets the named attribute of the object to the specified value.
-            `getattribute(attribute_name: str)`: 
-                Get a named attribute from object.
-            `signature_obj_and_init_callback(callback: Callable, init_event: Any = None)`: 
-                Signature of callback the object function and init event.
-
-        Example:
-        ```python
-            >>> EVENTS = EventsSignature()
-            >>> EVENTS.setattribute("init", None)
-            >>> print(EVENTS.getattribute("init"))
-            # Output.
-            # None
-
-            >>> EVENTS.setattribute("index", 100)
-            >>> print(EVENTS.getattribute("index"))
-            # Output.
-            # 100
-
-            >>> EVENTS.setattribute("name", "flet")
-            >>> print(EVENTS.name))
-            # Output.
-            # flet
-
-            >>> expression = lambda e: print(e.data)
-            >>> EVENTS.setattribute("data", "flet")
-            >>> EVENTS.signature_obj_and_init_callback(expression, init_event=EVENTS)
-            # Output.
-            # flet
-        ```
-        """
-        self.init = None
-
-    # DESC => the initialize method inside the class.
-    @staticmethod
-    def setattribute(attribute_name: str, value: Any):
-        """Sets the named attribute of the object to the specified value.
-
-        Args:
-            `attribute_name` (str): The name of the attribute.
-            `value` (Any): The value of the attribute.
-
-        Returns:
-            None
-        """
-        setattr(EventsSignature, attribute_name, value)
-    
-    @staticmethod
-    def getattribute(attribute_name: str):
-        """Get a named attribute from object.
-
-        Args:
-            `attribute_name` (str): The name of the attribute.
-        
-        Returns:
-            value: the value of attribute.
-        """
-        return getattr(EventsSignature, attribute_name)
-
-    @staticmethod
-    def signature_obj_and_init_callback(callback: Callable, init_event: Any = None):
-        """Signature of callback the object function and init event.
-
-        Args:
-            `callback` (Callable): The represent any callable object, such as a function,
-                a method, or a lambda expression.
-            `event` (Any, EventsSignature): The send Events data to callback object. Defaults to None.
-        """
-        sig = inspect.signature(callback) # DESC => Get the signature of the function.
-        params = [param.name for param in sig.parameters.values()] # DESC => Convert the signature to a list of strings
-        
-        if "event" in params:
-            callback.__call__(event=init_event)
-        elif "e" in params:
-            callback.__call__(e=init_event)
-        elif "_" in params:
-            callback.__call__(_=init_event)
-        else:
-            callback.__call__()
-
 class AxisCalc:
     """Calculate the top, bottom, right, and left coordinates of an object based on its axis."""
     def __init__(self, 
@@ -7378,4 +7289,505 @@ class AttrRegisterMap:
         assert hasattr(AttrRegisterMap, attribute_name), f"Attribute '{attribute_name}' does not exist."
         return getattr(AttrRegisterMap, attribute_name)
 
+class KwargsSignature:
+    """A class KwargsSignature the signature provides to keyword, for allows access to keyword by a attributes.
+    
+    Methods:
+        `callback_object(callback: Callable)`: 
+            The Execute the provided callback function with the signature of stored attributes keyword.
+    """
+    def __init__(self, kwargs: Dict):
+        """Initialize the KwargsSignature object.
+        
+        Args:
+            `kwargs` (Dict): A dictionary containing the keyword arguments to set attributes, and signature.
 
+        Returns:
+            None
+
+        Example:
+        ```python
+            # DESC => Create a dictionary with keyword arguments.
+            kwargs_signature = {
+                "control": "signature",
+                "name": "dictionary",
+                "target": 10101010,
+                "boolen": True,
+            }
+
+            # DESC => Create an instance of the KwargsSignature class.
+            kwargs_signature = KwargsSignature(kwargs_signature)
+
+            # DESC => To access the values as attributes.
+            print(kwargs_signature.control) # Output => signature
+            print(kwargs_signature.name) # Output => dictionary
+
+            # DESC => To define a callback function to handle the event etc.
+            def handle_event(event):
+                print("Event arguments:", event.target, event.boolen)
+            
+
+            # DESC => Call the object method with the callback function
+            kwargs_signature.callback_object(handle_event)
+            # Output => Event arguments: 10101010 True
+        ```
+        """
+        self.__dict__.update(kwargs)
+
+    def callback_object(self, callback: Callable) -> None:
+        """Execute the provided callback function with the signature of stored attributes keyword.
+
+        Args:
+            `callback` (Callable): The callback function to be executed. such as a function, a method, or a lambda expression.
+        
+        Raises:
+            TypeError: If the provided callback is not callable (i.e., not a function or a lambda expression).
+
+        Returns:
+            None
+
+        Notes:
+            - The `callback_object` method checks if the provided callback is callable (i.e., a function or a lambda expression)
+                and then calls it with the stored keyword arguments. If the callback is not callable, an exception is raised.
+        """
+        # DESC => Check if an object is callable.
+        if callable(callback):
+            # DESC => callback the object and passing the entire instance to the callback function.
+            callback.__call__(self)
+        else:
+            raise TypeError(f"Error: the object {callback} is not a function or a lambda expression.")
+
+    def __getattr__(self, item):
+        return self.__dict__[item]
+
+class ColorMaterialUi:
+    """A class ColorMaterialUi - The Material UI color names to hex values.
+    
+    Methods:
+        `to_color_hex(color_name: str)`: Get material ui of color hex values.
+    """
+    @staticmethod
+    def to_color_hex(color_name: str):
+        """The get material ui of color hex values.
+
+        Args:
+            `color_name` (str): The color name, including accent variants, for which the hex value is required.
+
+        Returns:
+            (str or None): The hex value of the specified color name, 
+                if found. Returns None if the color name is not recognized in the predefined.
+
+        Example:
+        ```python
+            print(ColorMaterialUi.get_material_color_hex("red"))            # Output: '#F44336'
+            print(ColorMaterialUi.get_material_color_hex("redaccent100"))   # Output: '#FF8A80'
+
+            print(ColorMaterialUi.red)                                      # Output: '#F44336'
+            print(ColorMaterialUi.redaccent100)                             # Output: '#FF8A80'
+        ```
+        """
+        _color_name = color_name.lower().replace("_", "")
+
+        if _color_name in ColorMaterialUi.colors:
+            return ColorMaterialUi.colors.get(_color_name, None)
+        elif _color_name in ColorMaterialUi.variants_colors:
+            return ColorMaterialUi.variants_colors.get(_color_name, None)
+        elif _color_name in ColorMaterialUi.accent_colors:
+            return ColorMaterialUi.accent_colors.get(_color_name, None)
+        else:
+            return None
+
+    # DESC => The colors hex values of m3.material.io
+    colors = {
+        "red": "#F44336", "pink": "#E91E63", "purple": "#9C27B0", "deeppurple": "#673AB7",
+        "indigo": "#3F51B5", "blue": "#2196F3", "lightblue": "#03A9F4", "cyan": "#00BCD4",
+        "teal": "#009688", "green": "#4CAF50", "lightgreen": "#8BC34A", "lime": "#CDDC39",
+        "yellow": "#FFEB3B", "amber": "#FFC107", "orange": "#FF9800", "deeporange": "#FF5722",
+        "brown": "#795548", "grey": "#9E9E9E", "bluegrey": "#607D8B"
+    }
+
+    variants_colors = {
+        "red50": "#FFEBEE", "red100": "#FFCDD2", "red200": "#EF9A9A", "red300": "#E57373",
+        "red400": "#EF5350", "red500": "#F44336", "red600": "#E53935", "red700": "#D32F2F",
+        "red800": "#C62828", "red900": "#B71C1C", "pink50": "#FCE4EC", "pink100": "#F8BBD0",
+        "pink200": "#F48FB1", "pink300": "#F06292", "pink400": "#EC407A", "pink500": "#E91E63",
+        "pink600": "#D81B60", "pink700": "#C2185B", "pink800": "#AD1457", "pink900": "#880E4F",
+        "purple50": "#F3E5F5", "purple100": "#E1BEE7", "purple200": "#CE93D8", "purple300": "#BA68C8",
+        "purple400": "#AB47BC", "purple500": "#9C27B0", "purple600": "#8E24AA", "purple700": "#7B1FA2",
+        "purple800": "#6A1B9A", "purple900": "#4A148C", "deeppurple50": "#EDE7F6",
+        "deeppurple100": "#D1C4E9", "deeppurple200": "#B39DDB", "deeppurple300": "#9575CD",
+        "deeppurple400": "#7E57C2", "deeppurple500": "#673AB7", "deeppurple600": "#5E35B1",
+        "deeppurple700": "#512DA8", "deeppurple800": "#4527A0", "deeppurple900": "#311B92",
+        "indigo50": "#E8EAF6", "indigo100": "#C5CAE9", "indigo200": "#9FA8DA", "indigo300": "#7986CB",
+        "indigo400": "#5C6BC0", "indigo500": "#3F51B5", "indigo600": "#3949AB", "indigo700": "#303F9F",
+        "indigo800": "#283593", "indigo900": "#1A237E", "blue50": "#E3F2FD", "blue100": "#BBDEFB",
+        "blue200": "#90CAF9", "blue300": "#64B5F6", "blue400": "#42A5F5", "blue500": "#2196F3",
+        "blue600": "#1E88E5", "blue700": "#1976D2", "blue800": "#1565C0", "blue900": "#0D47A1",
+        "lightblue50": "#E1F5FE", "lightblue100": "#B3E5FC", "lightblue200": "#81D4FA",
+        "lightblue300": "#4FC3F7", "lightblue400": "#29B6F6", "lightblue500": "#03A9F4",
+        "lightblue600": "#039BE5", "lightblue700": "#0288D1", "lightblue800": "#0277BD",
+        "lightblue900": "#01579B", "cyan50": "#E0F7FA", "cyan100": "#B2EBF2", "cyan200": "#80DEEA",
+        "cyan300": "#4DD0E1", "cyan400": "#26C6DA", "cyan500": "#00BCD4", "cyan600": "#00ACC1",
+        "cyan700": "#0097A7", "cyan800": "#00838F", "cyan900": "#006064", "teal50": "#E0F2F1",
+        "teal100": "#B2DFDB", "teal200": "#80CBC4", "teal300": "#4DB6AC", "teal400": "#26A69A",
+        "teal500": "#009688", "teal600": "#00897B", "teal700": "#00796B", "teal800": "#00695C",
+        "teal900": "#004D40", "green50": "#E8F5E9", "green100": "#C8E6C9", "green200": "#A5D6A7",
+        "green300": "#81C784", "green400": "#66BB6A", "green500": "#4CAF50", "green600": "#43A047",
+        "green700": "#388E3C", "green800": "#2E7D32", "green900": "#1B5E20", "lightgreen50": "#F1F8E9",
+        "lightgreen100": "#DCEDC8", "lightgreen200": "#C5E1A5", "lightgreen300": "#AED581",
+        "lightgreen400": "#9CCC65", "lightgreen500": "#8BC34A", "lightgreen600": "#7CB342",
+        "lightgreen700": "#689F38", "lightgreen800": "#558B2F", "lightgreen900": "#33691E",
+        "lime50": "#F9FBE7", "lime100": "#F0F4C3", "lime200": "#E6EE9C", "lime300": "#DCE775",
+        "lime400": "#D4E157", "lime500": "#CDDC39", "lime600": "#C0CA33", "lime700": "#AFB42B",
+        "lime800": "#9E9D24", "lime900": "#827717", "yellow50": "#FFFDE7", "yellow100": "#FFF9C4",
+        "yellow200": "#FFF59D", "yellow300": "#FFF176", "yellow400": "#FFEE58", "yellow500": "#FFEB3B",
+        "yellow600": "#FDD835", "yellow700": "#FBC02D", "yellow800": "#F9A825", "yellow900": "#F57F17",
+        "amber50": "#FFF8E1", "amber100": "#FFECB3", "amber200": "#FFE082", "amber300": "#FFD54F",
+        "amber400": "#FFCA28", "amber500": "#FFC107", "amber600": "#FFB300", "amber700": "#FFA000",
+        "amber800": "#FF8F00", "amber900": "#FF6F00", "orange50": "#FFF3E0", "orange100": "#FFE0B2",
+        "orange200": "#FFCC80", "orange300": "#FFB74D", "orange400": "#FFA726", "orange500": "#FF9800",
+        "orange600": "#FB8C00", "orange700": "#F57C00", "orange800": "#EF6C00", "orange900": "#E65100",
+        "deeporange50": "#FBE9E7", "deeporange100": "#FFCCBC", "deeporange200": "#FFAB91",
+        "deeporange300": "#FF8A65", "deeporange400": "#FF7043", "deeporange500": "#FF5722",
+        "deeporange600": "#F4511E", "deeporange700": "#E64A19", "deeporange800": "#D84315",
+        "deeporange900": "#BF360C", "brown50": "#EFEBE9", "brown100": "#D7CCC8", "brown200": "#BCAAA4",
+        "brown300": "#A1887F", "brown400": "#8D6E63", "brown500": "#795548", "brown600": "#6D4C41",
+        "brown700": "#5D4037", "brown800": "#4E342E", "brown900": "#3E2723", "grey50": "#FAFAFA",
+        "grey100": "#F5F5F5", "grey200": "#EEEEEE", "grey300": "#E0E0E0", "grey400": "#BDBDBD",
+        "grey500": "#9E9E9E", "grey600": "#757575", "grey700": "#616161", "grey800": "#424242",
+        "grey900": "#212121", "bluegrey50": "#ECEFF1", "bluegrey100": "#CFD8DC",
+        "bluegrey200": "#B0BEC5", "bluegrey300": "#90A4AE", "bluegrey400": "#78909C",
+        "bluegrey500": "#607D8B", "bluegrey600": "#546E7A", "bluegrey700": "#455A64",
+        "bluegrey800": "#37474F", "bluegrey900": "#263238"
+    }
+
+    accent_colors = {
+        "redaccent": "#FF5252", "redaccent100": "#FF8A80", "redaccent200": "#FF5252",
+        "redaccent400": "#FF1744", "redaccent700": "#D50000",
+        "pinkaccent": "#FF4081", "pinkaccent100": "#FF80AB", "pinkaccent200": "#FF4081",
+        "pinkaccent400": "#F50057", "pinkaccent700": "#C51162",
+        "purpleaccent": "#E040FB", "purpleaccent100": "#EA80FC", "purpleaccent200": "#E040FB",
+        "purpleaccent400": "#D500F9", "purpleaccent700": "#AA00FF",
+        "deeppurpleaccent": "#7C4DFF", "deeppurpleaccent100": "#B388FF",
+        "deeppurpleaccent200": "#7C4DFF", "deeppurpleaccent400": "#651FFF",
+        "deeppurpleaccent700": "#6200EA",
+        "indigoaccent": "#536DFE", "indigoaccent100": "#8C9EFF", "indigoaccent200": "#536DFE",
+        "indigoaccent400": "#3D5AFE", "indigoaccent700": "#304FFE",
+        "blueaccent": "#448AFF", "blueaccent100": "#82B1FF", "blueaccent200": "#448AFF",
+        "blueaccent400": "#2979FF", "blueaccent700": "#2962FF",
+        "lightblueaccent": "#40C4FF", "lightblueaccent100": "#80D8FF",
+        "lightblueaccent200": "#40C4FF", "lightblueaccent400": "#00B0FF",
+        "lightblueaccent700": "#0091EA",
+        "cyanaccent": "#18FFFF", "cyanaccent100": "#84FFFF", "cyanaccent200": "#18FFFF",
+        "cyanaccent400": "#00E5FF", "cyanaccent700": "#00B8D4",
+        "tealaccent": "#64FFDA", "tealaccent100": "#A7FFEB", "tealaccent200": "#64FFDA",
+        "tealaccent400": "#1DE9B6", "tealaccent700": "#00BFA5",
+        "greenaccent": "#69F0AE", "greenaccent100": "#B9F6CA", "greenaccent200": "#69F0AE",
+        "greenaccent400": "#00E676", "greenaccent700": "#00C853",
+        "lightgreenaccent": "#B2FF59", "lightgreenaccent100": "#CCFF90",
+        "lightgreenaccent200": "#B2FF59", "lightgreenaccent400": "#76FF03",
+        "lightgreenaccent700": "#64DD17",
+        "limeaccent": "#EEFF41", "limeaccent100": "#F4FF81", "limeaccent200": "#EEFF41",
+        "limeaccent400": "#C6FF00", "limeaccent700": "#AEEA00",
+        "yellowaccent": "#FFFF00", "yellowaccent100": "#FFFF8D", "yellowaccent200": "#FFFF00",
+        "yellowaccent400": "#FFEA00", "yellowaccent700": "#FFD600",
+        "amberaccent": "#FFC107", "amberaccent100": "#FFE57F", "amberaccent200": "#FFC107",
+        "amberaccent400": "#FFA000", "amberaccent700": "#FF8F00",
+        "orangeaccent": "#FF9800", "orangeaccent100": "#FFD180", "orangeaccent200": "#FF9800",
+        "orangeaccent400": "#FF6D00", "orangeaccent700": "#FF9100",
+        "deeporangeaccent": "#FF6E40", "deeporangeaccent100": "#FF9E80",
+        "deeporangeaccent200": "#FF6E40", "deeporangeaccent400": "#FF3D00",
+        "deeporangeaccent700": "#DD2C00",
+    }
+
+    red = "#F44336" 
+    pink = "#E91E63" 
+    purple = "#9C27B0" 
+    deeppurple = "#673AB7"
+    indigo = "#3F51B5" 
+    blue = "#2196F3" 
+    lightblue = "#03A9F4" 
+    cyan = "#00BCD4"
+    teal = "#009688" 
+    green= "#4CAF50" 
+    lightgreen = "#8BC34A" 
+    lime = "#CDDC39"
+    yellow = "#FFEB3B" 
+    amber = "#FFC107" 
+    orange = "#FF9800" 
+    deeporange = "#FF5722"
+    brown = "#795548" 
+    grey = "#9E9E9E" 
+    bluegrey = "#607D8B"
+
+    redaccent = "#FF5252"
+    redaccent100 = "#FF8A80"
+    redaccent200 = "#FF5252"
+    redaccent400 = "#FF1744"
+    redaccent700 = "#D50000"
+    pinkaccent = "#FF4081"
+    pinkaccent100 = "#FF80AB"
+    pinkaccent200 = "#FF4081"
+    pinkaccent400 = "#F50057"
+    pinkaccent700 = "#C51162"
+    purpleaccent = "#E040FB"
+    purpleaccent100 = "#EA80FC"
+    purpleaccent200 = "#E040FB"
+    purpleaccent400 = "#D500F9"
+    purpleaccent700 = "#AA00FF"
+    deep_purpleaccent = "#7C4DFF"
+    deep_purpleaccent100 = "#B388FF"
+    deep_purpleaccent200 = "#7C4DFF"
+    deep_purpleaccent400 = "#651FFF"
+    deep_purpleaccent700 = "#6200EA"
+    indigoaccent = "#536DFE"
+    indigoaccent100 = "#8C9EFF"
+    indigoaccent200 = "#536DFE"
+    indigoaccent400 = "#3D5AFE"
+    indigoaccent700 = "#304FFE"
+    blueaccent = "#448AFF"
+    blueaccent100 = "#82B1FF"
+    blueaccent200 = "#448AFF"
+    blueaccent400 = "#2979FF"
+    blueaccent700 = "#2962FF"
+    light_blueaccent = "#40C4FF"
+    light_blueaccent100 = "#80D8FF"
+    light_blueaccent200 = "#40C4FF"
+    light_blueaccent400 = "#00B0FF"
+    light_blueaccent700 = "#0091EA"
+    cyanaccent = "#18FFFF"
+    cyanaccent100 = "#84FFFF"
+    cyanaccent200 = "#18FFFF"
+    cyanaccent400 = "#00E5FF"
+    cyanaccent700 = "#00B8D4"
+    tealaccent = "#64FFDA"
+    tealaccent100 = "#A7FFEB"
+    tealaccent200 = "#64FFDA"
+    tealaccent400 = "#1DE9B6"
+    tealaccent700 = "#00BFA5"
+    greenaccent = "#69F0AE"
+    greenaccent100 = "#B9F6CA"
+    greenaccent200 = "#69F0AE"
+    greenaccent400 = "#00E676"
+    greenaccent700 = "#00C853"
+    light_greenaccent = "#B2FF59"
+    light_greenaccent100 = "#CCFF90"
+    light_greenaccent200 = "#B2FF59"
+    light_greenaccent400 = "#76FF03"
+    light_greenaccent700 = "#64DD17"
+    limeaccent = "#EEFF41"
+    limeaccent100 = "#F4FF81"
+    limeaccent200 = "#EEFF41"
+    limeaccent400 = "#C6FF00"
+    limeaccent700 = "#AEEA00"
+    yellowaccent = "#FFFF00"
+    yellowaccent100 = "#FFFF8D"
+    yellowaccent200 = "#FFFF00"
+    yellowaccent400 = "#FFEA00"
+    yellowaccent700 = "#FFD600"
+    amberaccent = "#FFC107"
+    amberaccent100 = "#FFE57F"
+    amberaccent200 = "#FFC107"
+    amberaccent400 = "#FFA000"
+    amberaccent700 = "#FF8F00"
+    orangeaccent = "#FF9800"
+    orangeaccent100 = "#FFD180"
+    orangeaccent200 = "#FF9800"
+    orangeaccent400 = "#FF6D00"
+    orangeaccent700 = "#FF9100"
+    deep_orangeaccent = "#FF6E40"
+    deep_orangeaccent100 = "#FF9E80"
+    deep_orangeaccent200 = "#FF6E40"
+    deep_orangeaccent400 = "#FF3D00"
+    deep_orangeaccent700 = "#DD2C00"
+
+    red50 = "#FFEBEE"
+    red100 = "#FFCDD2"
+    red200 = "#EF9A9A"
+    red300 = "#E57373"
+    red400 = "#EF5350"
+    red500 = "#F44336"
+    red600 = "#E53935"
+    red700 = "#D32F2F"
+    red800 = "#C62828"
+    red900 = "#B71C1C"
+    pink50 = "#FCE4EC"
+    pink100 = "#F8BBD0"
+    pink200 = "#F48FB1"
+    pink300 = "#F06292"
+    pink400 = "#EC407A"
+    pink500 = "#E91E63"
+    pink600 = "#D81B60"
+    pink700 = "#C2185B"
+    pink800 = "#AD1457"
+    pink900 = "#880E4F"
+    purple50 = "#F3E5F5"
+    purple100 = "#E1BEE7"
+    purple200 = "#CE93D8"
+    purple300 = "#BA68C8"
+    purple400 = "#AB47BC"
+    purple500 = "#9C27B0"
+    purple600 = "#8E24AA"
+    purple700 = "#7B1FA2"
+    purple800 = "#6A1B9A"
+    purple900 = "#4A148C"
+    deep_purple50 = "#EDE7F6"
+    deep_purple100 = "#D1C4E9"
+    deep_purple200 = "#B39DDB"
+    deep_purple300 = "#9575CD"
+    deep_purple400 = "#7E57C2"
+    deep_purple500 = "#673AB7"
+    deep_purple600 = "#5E35B1"
+    deep_purple700 = "#512DA8"
+    deep_purple800 = "#4527A0"
+    deep_purple900 = "#311B92"
+    indigo50 = "#E8EAF6"
+    indigo100 = "#C5CAE9"
+    indigo200 = "#9FA8DA"
+    indigo300 = "#7986CB"
+    indigo400 = "#5C6BC0"
+    indigo500 = "#3F51B5"
+    indigo600 = "#3949AB"
+    indigo700 = "#303F9F"
+    indigo800 = "#283593"
+    indigo900 = "#1A237E"
+    blue50 = "#E3F2FD"
+    blue100 = "#BBDEFB"
+    blue200 = "#90CAF9"
+    blue300 = "#64B5F6"
+    blue400 = "#42A5F5"
+    blue500 = "#2196F3"
+    blue600 = "#1E88E5"
+    blue700 = "#1976D2"
+    blue800 = "#1565C0"
+    blue900 = "#0D47A1"
+    light_blue50 = "#E1F5FE"
+    light_blue100 = "#B3E5FC"
+    light_blue200 = "#81D4FA"
+    light_blue300 = "#4FC3F7"
+    light_blue400 = "#29B6F6"
+    light_blue500 = "#03A9F4"
+    light_blue600 = "#039BE5"
+    light_blue700 = "#0288D1"
+    light_blue800 = "#0277BD"
+    light_blue900 = "#01579B"
+    cyan50 = "#E0F7FA"
+    cyan100 = "#B2EBF2"
+    cyan200 = "#80DEEA"
+    cyan300 = "#4DD0E1"
+    cyan400 = "#26C6DA"
+    cyan500 = "#00BCD4"
+    cyan600 = "#00ACC1"
+    cyan700 = "#0097A7"
+    cyan800 = "#00838F"
+    cyan900 = "#006064"
+    teal50 = "#E0F2F1"
+    teal100 = "#B2DFDB"
+    teal200 = "#80CBC4"
+    teal300 = "#4DB6AC"
+    teal400 = "#26A69A"
+    teal500 = "#009688"
+    teal600 = "#00897B"
+    teal700 = "#00796B"
+    teal800 = "#00695C"
+    teal900 = "#004D40"
+    green50 = "#E8F5E9"
+    green100 = "#C8E6C9"
+    green200 = "#A5D6A7"
+    green300 = "#81C784"
+    green400 = "#66BB6A"
+    green500 = "#4CAF50"
+    green600 = "#43A047"
+    green700 = "#388E3C"
+    green800 = "#2E7D32"
+    green900 = "#1B5E20"
+    light_green50 = "#F1F8E9"
+    light_green100 = "#DCEDC8"
+    light_green200 = "#C5E1A5"
+    light_green300 = "#AED581"
+    light_green400 = "#9CCC65"
+    light_green500 = "#8BC34A"
+    light_green600 = "#7CB342"
+    light_green700 = "#689F38"
+    light_green800 = "#558B2F"
+    light_green900 = "#33691E"
+    lime50 = "#F9FBE7"
+    lime100 = "#F0F4C3"
+    lime200 = "#E6EE9C"
+    lime300 = "#DCE775"
+    lime400 = "#D4E157"
+    lime500 = "#CDDC39"
+    lime600 = "#C0CA33"
+    lime700 = "#AFB42B"
+    lime800 = "#9E9D24"
+    lime900 = "#827717"
+    yellow50 = "#FFFDE7"
+    yellow100 = "#FFF9C4"
+    yellow200 = "#FFF59D"
+    yellow300 = "#FFF176"
+    yellow400 = "#FFEE58"
+    yellow500 = "#FFEB3B"
+    yellow600 = "#FDD835"
+    yellow700 = "#FBC02D"
+    yellow800 = "#F9A825"
+    yellow900 = "#F57F17"
+    amber50 = "#FFF8E1"
+    amber100 = "#FFECB3"
+    amber200 = "#FFE082"
+    amber300 = "#FFD54F"
+    amber400 = "#FFCA28"
+    amber500 = "#FFC107"
+    amber600 = "#FFB300"
+    amber700 = "#FFA000"
+    amber800 = "#FF8F00"
+    amber900 = "#FF6F00"
+    orange50 = "#FFF3E0"
+    orange100 = "#FFE0B2"
+    orange200 = "#FFCC80"
+    orange300 = "#FFB74D"
+    orange400 = "#FFA726"
+    orange500 = "#FF9800"
+    orange600 = "#FB8C00"
+    orange700 = "#F57C00"
+    orange800 = "#EF6C00"
+    orange900 = "#E65100"
+    deep_orange50 = "#FBE9E7"
+    deep_orange100 = "#FFCCBC"
+    deep_orange200 = "#FFAB91"
+    deep_orange300 = "#FF8A65"
+    deep_orange400 = "#FF7043"
+    deep_orange500 = "#FF5722"
+    deep_orange600 = "#F4511E"
+    deep_orange700 = "#E64A19"
+    deep_orange800 = "#D84315"
+    deep_orange900 = "#BF360C"
+    brown50 = "#EFEBE9"
+    brown100 = "#D7CCC8"
+    brown200 = "#BCAAA4"
+    brown300 = "#A1887F"
+    brown400 = "#8D6E63"
+    brown500 = "#795548"
+    brown600 = "#6D4C41"
+    brown700 = "#5D4037"
+    brown800 = "#4E342E"
+    brown900 = "#3E2723"
+    grey50 = "#FAFAFA"
+    grey100 = "#F5F5F5"
+    grey200 = "#EEEEEE"
+    grey300 = "#E0E0E0"
+    grey400 = "#BDBDBD"
+    grey500 = "#9E9E9E"
+    grey600 = "#757575"
+    grey700 = "#616161"
+    grey800 = "#424242"
+    grey900 = "#212121"
+    blue_grey50 = "#ECEFF1"
+    blue_grey100 = "#CFD8DC"
+    blue_grey200 = "#B0BEC5"
+    blue_grey300 = "#90A4AE"
+    blue_grey400 = "#78909C"
+    blue_grey500 = "#607D8B"
+    blue_grey600 = "#546E7A"
+    blue_grey700 = "#455A64"
+    blue_grey800 = "#37474F"
+    blue_grey900 = "#263238"
