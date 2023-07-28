@@ -29,7 +29,7 @@
 ## Installation
 ### Using
 > Create and activate a Python virtual environment.
-```toml
+```txt
 pip install -e git+https://github.com/MrYassinox/utils-standard.git@main
 # or
 pip install https://github.com/MrYassinox/utils-standard/archive/main.zip
@@ -39,7 +39,7 @@ pip install https://git+github.com/MrYassinox/utils-standard.git@<branch_name or
 
 ### Using as a devlope
 > Cloning repository with `git clone` go to into your project directory where to clone repository.
-```toml
+```txt
 git clone https://github.com/MrYassinox/utils-standard.git
 pip install -e .  # go to inside project repository directory and run this command.
 ```
