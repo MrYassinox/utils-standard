@@ -1,4 +1,5 @@
 <div align="center">
+This repository has been archived. (No new updates). Please visit and use the new repository.
 
 # utils standard
 [![GitHub license](https://img.shields.io/github/license/MrYassinox/utils-standard?color=blue)](./LICENSE)
